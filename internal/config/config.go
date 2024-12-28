@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 )
@@ -49,10 +50,12 @@ func Read() (*Config, error) {
 	return &config, nil
 }
 
-func (c *Config) Validate() map[string][]error {
+func (c *Config) Validate() (map[string][]string, map[string][]error) {
 	allErrs := map[string][]error{}
+	allWarns := map[string][]string{}
 	uniqueNames := map[string]struct{}{}
 	uniquePaths := map[string]struct{}{}
+
 	for _, dest := range c.Destinations {
 		// check if there are duplicate names
 		_, exists := uniqueNames[dest.Name]
@@ -104,8 +107,16 @@ func (c *Config) Validate() map[string][]error {
 			)
 		}
 
-		// check if dir/file links exist
+		// check if path contains '/'
+		if strings.Contains(dest.Path, "//") {
+			allWarns[dest.Name] = append(
+				allWarns[dest.Name],
+				fmt.Sprintf("Path '%s' contains consecutive '/'. It should not affect linking, but avoid using consecutive '/'.", dest.Path),
+			)
+		}
+
 		for _, link := range dest.Links {
+            // check if dir/file links exist
 			dir, err := os.Getwd()
 			if err != nil {
 				allErrs[dest.Name] = append(allErrs[dest.Name], err)
@@ -119,8 +130,16 @@ func (c *Config) Validate() map[string][]error {
 					fmt.Errorf("Directory/File not found: './%s'", link),
 				)
 			}
+
+            // check if dir/file contains '/'
+			if strings.Contains(link, "/") {
+				allWarns[dest.Name] = append(
+					allWarns[dest.Name],
+                    fmt.Sprintf("Directory/File '%s' contains '/'. It should not affect linking, but avoid using '/' and subdirs on links.", link),
+				)
+			}
 		}
 
 	}
-	return allErrs
+	return allWarns, allErrs
 }

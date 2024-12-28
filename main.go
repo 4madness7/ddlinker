@@ -82,16 +82,27 @@ func main() {
 		os.Exit(1)
 	}
 
-	allErrs := data.cfg.Validate()
+	allWarns, allErrs := data.cfg.Validate()
+	if len(allWarns) > 0 {
+		fmt.Println("===== WARNINGS =====")
+		fmt.Println("The following warnings were found while validating the config file:")
+		for name, warns := range allWarns {
+			fmt.Printf("-- Destination '%s' --\n", name)
+			for _, err := range warns {
+				fmt.Println("    -", err)
+			}
+			fmt.Println()
+		}
+	}
 	if len(allErrs) > 0 {
-		fmt.Println("===== ERROR =====")
-        fmt.Println("The following errors were found while validating the config file:")
+		fmt.Println("===== ERRORS =====")
+		fmt.Println("The following errors were found while validating the config file:")
 		for name, errs := range allErrs {
-            fmt.Printf("-- Destination '%s' --\n", name)
-            for _, err := range errs {
-                fmt.Println("    -", err)
-            }
-            fmt.Println()
+			fmt.Printf("-- Destination '%s' --\n", name)
+			for _, err := range errs {
+				fmt.Println("    -", err)
+			}
+			fmt.Println()
 		}
 		os.Exit(1)
 	}

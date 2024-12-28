@@ -26,7 +26,7 @@ func previewHandler(data *Data) error {
 		fmt.Println("Preview:")
 		for _, link := range dest.Links {
 			destFullPath := filepath.Join(dest.Path, link)
-			fmt.Printf("%s -> %s\n", link, destFullPath)
+			fmt.Printf("    %s -> %s\n", link, destFullPath)
 		}
 		fmt.Println()
 	}
