@@ -42,7 +42,7 @@ func main() {
 	fmt.Println(args)
 	fmt.Println("===== DEBUG =====")
 
-	if len(args) == 0 {
+	if len(args) == 0 && !data.flags.help.Value {
 		fmt.Println("Please provide a command.")
 		os.Exit(1)
 	}
@@ -55,12 +55,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	input := args[0]
+	input := ""
+	if len(args) > 0 {
+		input = args[0]
+	}
+
 	commands := getCommands()
-	data.cfg, err = config.Read()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	if data.flags.help.Value {
+		err := helpHandler(commands, input)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		os.Exit(0)
 	}
 
 	cmd, ok := commands[input]
@@ -68,5 +75,16 @@ func main() {
 		fmt.Printf("Command '%s' does not exist.\n", input)
 		os.Exit(1)
 	}
-	cmd.run(&data)
+
+	data.cfg, err = config.Read()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	err = cmd.run(&data)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

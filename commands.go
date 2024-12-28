@@ -13,8 +13,8 @@ func getCommands() Commands {
 	return Commands{
 		"preview": Command{
 			name:  "preview",
-			desc:  "Shows a preview of the final links.",
-			usage: "Shows a preview of the final links.",
+			desc:  "Shows a preview of the final links. Use it with '-v' for full paths.",
+			usage: "ddlinker preview",
 			run:   previewHandler,
 		},
 	}
