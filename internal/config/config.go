@@ -76,21 +76,31 @@ func (c *Config) Validate() map[string][]error {
 			uniquePaths[dest.Path] = struct{}{}
 		}
 
-		// check if dir exists
-		_, err := os.Stat(dest.Path)
-		exists = os.IsExist(err)
-		if !exists {
-			allErrs[dest.Name] = append(
-				allErrs[dest.Name],
-				fmt.Errorf("Directory not found: '%s'", dest.Path),
-			)
-		}
-
 		// check if dir is absolute path
 		if dest.Path[0] != '~' && dest.Path[0] != '/' {
 			allErrs[dest.Name] = append(
 				allErrs[dest.Name],
 				fmt.Errorf("Path is not absolute: '%s'", dest.Path),
+			)
+		}
+
+		// check if dir exists
+		path := dest.Path
+		if dest.Path[0] == '~' {
+			home, err := os.UserHomeDir()
+			if err != nil {
+				allErrs[dest.Name] = append(allErrs[dest.Name], err)
+				continue
+			}
+			path = filepath.Join(home, dest.Path[1:])
+		}
+
+		_, err := os.Stat(path)
+		notExists := os.IsNotExist(err)
+		if notExists {
+			allErrs[dest.Name] = append(
+				allErrs[dest.Name],
+				fmt.Errorf("Directory not found: '%s'", dest.Path),
 			)
 		}
 
@@ -102,8 +112,8 @@ func (c *Config) Validate() map[string][]error {
 				continue
 			}
 			_, err = os.Stat(filepath.Join(dir, link))
-			exists = os.IsExist(err)
-			if !exists {
+			notExists := os.IsNotExist(err)
+			if notExists {
 				allErrs[dest.Name] = append(
 					allErrs[dest.Name],
 					fmt.Errorf("Directory/File not found: './%s'", link),
