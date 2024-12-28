@@ -37,10 +37,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("===== DEBUG =====")
-	fmt.Printf("help: %v | verb: %v\n", data.flags.help.Value, data.flags.verbose.Value)
-	fmt.Println(args)
-	fmt.Println("===== DEBUG =====")
+	// fmt.Println("===== DEBUG =====")
+	// fmt.Printf("help: %v | verb: %v\n", data.flags.help.Value, data.flags.verbose.Value)
+	// fmt.Println(args)
+	// fmt.Println("===== DEBUG =====")
 
 	if len(args) == 0 && !data.flags.help.Value {
 		fmt.Println("Please provide a command.")
@@ -79,6 +79,20 @@ func main() {
 	data.cfg, err = config.Read()
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	allErrs := data.cfg.Validate()
+	if len(allErrs) > 0 {
+		fmt.Println("===== ERROR =====")
+        fmt.Println("The following errors were found while validating the config file:")
+		for name, errs := range allErrs {
+            fmt.Printf("-- Destination '%s' --\n", name)
+            for _, err := range errs {
+                fmt.Println("    -", err)
+            }
+            fmt.Println()
+		}
 		os.Exit(1)
 	}
 
