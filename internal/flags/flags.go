@@ -13,8 +13,8 @@ type Flag struct {
 	Value       bool
 }
 
-func NewFlag(shortName rune, longName, description string, value bool) Flag {
-	return Flag{
+func NewFlag(shortName rune, longName, description string, value bool) *Flag {
+	return &Flag{
 		description: description,
 		longName:    "--" + longName,
 		shortName:   "-" + string(shortName),
@@ -58,9 +58,9 @@ func Parse() ([]string, error) {
 		if flag.marked {
 			return args, fmt.Errorf("Duplicate flags '%s' and '%s'. Use only one.", flag.shortName, flag.longName)
 		}
-        flag.Value = true
-        flag.marked = true
-        i++
+		flag.Value = true
+		flag.marked = true
+		i++
 	}
 	return args[i:], nil
 

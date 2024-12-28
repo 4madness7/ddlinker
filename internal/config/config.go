@@ -22,28 +22,28 @@ type destination struct {
 	Links []string `toml:"links"`
 }
 
-func Read() (Config, error) {
+func Read() (*Config, error) {
 	currDir, err := os.Getwd()
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 
 	file, err := os.Open(filepath.Join(currDir, configFileName))
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 	defer file.Close()
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 
 	var config Config
 	err = toml.Unmarshal(data, &config)
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 
-	return config, nil
+	return &config, nil
 }
