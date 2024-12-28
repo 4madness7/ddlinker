@@ -57,6 +57,24 @@ func (c *Config) Validate() (map[string][]string, map[string][]error) {
 	uniquePaths := map[string]struct{}{}
 
 	for _, dest := range c.Destinations {
+		// check if name of dest is empty
+		if dest.Name == "" {
+			allErrs[dest.Name] = append(
+				allErrs[dest.Name],
+				fmt.Errorf("Destination with no name."),
+			)
+		}
+
+		// check if path of dest is empty
+		hasPath := true
+		if dest.Path == "" {
+			allErrs[dest.Name] = append(
+				allErrs[dest.Name],
+				fmt.Errorf("Destination with no path."),
+			)
+			hasPath = false
+		}
+
 		// check if there are duplicate names
 		_, exists := uniqueNames[dest.Name]
 		if exists {
@@ -80,7 +98,7 @@ func (c *Config) Validate() (map[string][]string, map[string][]error) {
 		}
 
 		// check if dir is absolute path
-		if dest.Path[0] != '~' && dest.Path[0] != '/' {
+		if hasPath && dest.Path[0] != '~' && dest.Path[0] != '/' {
 			allErrs[dest.Name] = append(
 				allErrs[dest.Name],
 				fmt.Errorf("Path is not absolute: '%s'", dest.Path),
@@ -89,7 +107,7 @@ func (c *Config) Validate() (map[string][]string, map[string][]error) {
 
 		// check if dir exists
 		path := dest.Path
-		if dest.Path[0] == '~' {
+		if hasPath && dest.Path[0] == '~' {
 			home, err := os.UserHomeDir()
 			if err != nil {
 				allErrs[dest.Name] = append(allErrs[dest.Name], err)
@@ -116,7 +134,7 @@ func (c *Config) Validate() (map[string][]string, map[string][]error) {
 		}
 
 		for _, link := range dest.Links {
-            // check if dir/file links exist
+			// check if dir/file links exist
 			dir, err := os.Getwd()
 			if err != nil {
 				allErrs[dest.Name] = append(allErrs[dest.Name], err)
@@ -131,11 +149,11 @@ func (c *Config) Validate() (map[string][]string, map[string][]error) {
 				)
 			}
 
-            // check if dir/file contains '/'
+			// check if dir/file contains '/'
 			if strings.Contains(link, "/") {
 				allWarns[dest.Name] = append(
 					allWarns[dest.Name],
-                    fmt.Sprintf("Directory/File '%s' contains '/'. It should not affect linking, but avoid using '/' and subdirs on links.", link),
+					fmt.Sprintf("Directory/File '%s' contains '/'. It should not affect linking, but avoid using '/' and subdirs on links.", link),
 				)
 			}
 		}
