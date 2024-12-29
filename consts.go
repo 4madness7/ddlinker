@@ -18,4 +18,6 @@ const (
 # Every string in the list must be a valid file/dir in your current directory.
 # Take the destination above, it will create a symlink that will look something
 # like this './nvim -> ~/.config/nvim'.`
+
+	shortHelpMsg = "Use 'ddlinker --help' for more information."
 )

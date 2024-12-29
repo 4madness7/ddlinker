@@ -39,14 +39,17 @@ func main() {
 
 	if len(args) == 0 && !data.flags.help.Value {
 		fmt.Println("Please provide a command.")
+		fmt.Println(shortHelpMsg)
 		os.Exit(1)
 	}
 	if len(args) > 1 {
 		fmt.Println("Too many commands.")
+		fmt.Println(shortHelpMsg)
 		os.Exit(1)
 	}
 	if data.flags.verbose.Value && data.flags.help.Value {
 		fmt.Println("'verbose' and 'help' flag cannot be used together.")
+		fmt.Println(shortHelpMsg)
 		os.Exit(1)
 	}
 
@@ -68,6 +71,7 @@ func main() {
 	cmd, ok := commands[input]
 	if !ok {
 		fmt.Printf("Command '%s' does not exist.\n", input)
+		fmt.Println(shortHelpMsg)
 		os.Exit(1)
 	}
 
