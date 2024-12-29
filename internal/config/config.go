@@ -133,6 +133,14 @@ func (c *Config) Validate() (map[string][]string, map[string][]error) {
 			)
 		}
 
+        // checks if no links are provided
+        if len(dest.Links) == 0 {
+			allWarns[dest.Name] = append(
+				allWarns[dest.Name],
+				fmt.Sprintf("No links provided. It should not affect linking, but avoid destinations with empty links."),
+			)
+        }
+
 		for _, link := range dest.Links {
 			// check if dir/file links exist
 			dir, err := os.Getwd()
