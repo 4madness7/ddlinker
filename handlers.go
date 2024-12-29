@@ -6,18 +6,25 @@ import (
 	"path/filepath"
 
 	"github.com/4madness7/ddlinker/internal/config"
+	"github.com/4madness7/ddlinker/internal/flags"
 )
 
 func helpHandler(commands Commands, input string) error {
+	fmt.Println("===== Help Menu =====")
+	fmt.Println()
 	if input != "" {
 		command, ok := commands[input]
 		if !ok {
-			return fmt.Errorf("Command '%s' does not exist.\n", input)
+			return fmt.Errorf("Command '%s' does not exist.", input)
 		}
-		fmt.Printf("%s\t\t%s    Eg. '%s'\n", command.name, command.desc, command.usage)
+		fmt.Printf("%s\t%s Eg. '%s'\n", command.name, command.desc, command.usage)
+		return nil
 	}
+	fmt.Println("Flags")
+	fmt.Println(flags.GetHelpMenu())
+	fmt.Println("Commands")
 	for _, command := range commands {
-		fmt.Printf("%s\t\t%s    Eg. '%s'\n", command.name, command.desc, command.usage)
+		fmt.Printf("  %s\t%s Eg. '%s'\n", command.name, command.desc, command.usage)
 	}
 	return nil
 }
@@ -66,11 +73,11 @@ func generateHandler(data *Data) error {
 	if exists {
 		return fmt.Errorf("Config file '%s' already exists.", config.ConfigFileName)
 	}
-    f, err := os.Create(fullPath)
+	f, err := os.Create(fullPath)
 	if err != nil {
 		return err
 	}
-    _, err = f.Write([]byte(configCreationString))
+	_, err = f.Write([]byte(configCreationString))
 	if err != nil {
 		return err
 	}

@@ -65,3 +65,19 @@ func Parse() ([]string, error) {
 	return args[i:], nil
 
 }
+
+func GetHelpMenu() string {
+	uniqueFlags := map[*Flag]struct{}{}
+    for _, f := range allFlags {
+        if _, ok := uniqueFlags[f]; !ok {
+            uniqueFlags[f] = struct{}{}
+        }
+    }
+
+    helpMenu := ""
+
+    for k := range uniqueFlags {
+        helpMenu = helpMenu + fmt.Sprintf("  %s,%s\t%s\n", k.shortName, k.longName, k.description)
+    }
+    return helpMenu
+}
