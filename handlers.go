@@ -35,8 +35,18 @@ func previewHandler(data *Data) error {
 		fmt.Printf("Destination path: %s\n", path)
 		fmt.Println("Preview:")
 		for _, link := range dest.Links {
+			var fullLink string
+			if data.flags.verbose.Value {
+				var err error
+				fullLink, err = filepath.Abs(link)
+				if err != nil {
+					return err
+				}
+			} else {
+				fullLink = "./" + link
+			}
 			destFullPath := filepath.Join(path, link)
-			fmt.Printf("    %s -> %s\n", link, destFullPath)
+			fmt.Printf("  %s -> %s\n", fullLink, destFullPath)
 		}
 		fmt.Println()
 	}
