@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	configFileName = ".ddlinker_config.toml"
+	ConfigFileName = ".ddlinker_config.toml"
 )
 
 type Config struct {
@@ -30,7 +30,7 @@ func Read() (*Config, error) {
 		return nil, err
 	}
 
-	file, err := os.Open(filepath.Join(currDir, configFileName))
+	file, err := os.Open(filepath.Join(currDir, ConfigFileName))
 	if err != nil {
 		return nil, err
 	}

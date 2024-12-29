@@ -17,5 +17,12 @@ func getCommands() Commands {
 			usage: "ddlinker preview",
 			run:   previewHandler,
 		},
+
+		"generate": Command{
+			name:  "generate",
+			desc:  "Generates '.ddlinker_config.toml' file in current directory.",
+			usage: "ddlinker generate",
+			run:   generateHandler,
+		},
 	}
 }

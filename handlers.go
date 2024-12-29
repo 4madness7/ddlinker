@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
+
+	"github.com/4madness7/ddlinker/internal/config"
 )
 
 func helpHandler(commands Commands, input string) error {
@@ -50,5 +53,27 @@ func previewHandler(data *Data) error {
 		}
 		fmt.Println()
 	}
+	return nil
+}
+
+func generateHandler(data *Data) error {
+	fullPath, err := filepath.Abs(config.ConfigFileName)
+	if err != nil {
+		return err
+	}
+	_, err = os.Stat(fullPath)
+	exists := !os.IsNotExist(err)
+	if exists {
+		return fmt.Errorf("Config file '%s' already exists.", config.ConfigFileName)
+	}
+    f, err := os.Create(fullPath)
+	if err != nil {
+		return err
+	}
+    _, err = f.Write([]byte(configCreationString))
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Config file '%s' created.\n", config.ConfigFileName)
 	return nil
 }

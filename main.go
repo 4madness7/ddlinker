@@ -37,11 +37,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// fmt.Println("===== DEBUG =====")
-	// fmt.Printf("help: %v | verb: %v\n", data.flags.help.Value, data.flags.verbose.Value)
-	// fmt.Println(args)
-	// fmt.Println("===== DEBUG =====")
-
 	if len(args) == 0 && !data.flags.help.Value {
 		fmt.Println("Please provide a command.")
 		os.Exit(1)
@@ -74,6 +69,15 @@ func main() {
 	if !ok {
 		fmt.Printf("Command '%s' does not exist.\n", input)
 		os.Exit(1)
+	}
+
+	if cmd.name == "generate" {
+		err := cmd.run(&data)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		os.Exit(0)
 	}
 
 	data.cfg, err = config.Read()
