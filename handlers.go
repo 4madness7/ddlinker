@@ -18,14 +18,14 @@ func helpHandler(commands Commands, input string) error {
 		if !ok {
 			return fmt.Errorf("Command '%s' does not exist.", input)
 		}
-		fmt.Printf("%s\t%s Eg. '%s'\n", command.name, command.desc, command.usage)
+		fmt.Println(command.getHelp())
 		return nil
 	}
 	fmt.Println("Flags")
 	fmt.Println(flags.GetHelpMenu())
 	fmt.Println("Commands")
-	for _, command := range commands {
-		fmt.Printf("  %s\t%s Eg. '%s'\n", command.name, command.desc, command.usage)
+	for _, k := range commands.getOrderedKeys() {
+		fmt.Println(commands[k].getHelp())
 	}
 	return nil
 }

@@ -18,13 +18,25 @@ type Data struct {
 
 func main() {
 	data := Data{}
-	data.flags.verbose = flags.NewFlag('v', "verbose", "When used, ddlinker will print more detailed output.", false)
+	data.flags.verbose = flags.NewFlag(
+		'v',
+		"verbose",
+		"When used, ddlinker will print more detailed output.",
+		"ddlinker -v|--verbose <command>",
+		false,
+	)
 	err := flags.Register(data.flags.verbose)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	data.flags.help = flags.NewFlag('h', "help", "When used, prints help menu or description for specified command.", false)
+	data.flags.help = flags.NewFlag(
+		'h',
+		"help",
+		"When used, prints help menu or description for specified command.",
+		"ddlinker -h|--help <command>",
+		false,
+	)
 	err = flags.Register(data.flags.help)
 	if err != nil {
 		fmt.Println(err)

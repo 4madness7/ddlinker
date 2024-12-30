@@ -9,15 +9,17 @@ type Flag struct {
 	description string
 	shortName   string
 	longName    string
+	usage       string
 	marked      bool
 	Value       bool
 }
 
-func NewFlag(shortName rune, longName, description string, value bool) *Flag {
+func NewFlag(shortName rune, longName, description, usage string, value bool) *Flag {
 	return &Flag{
 		description: description,
 		longName:    "--" + longName,
 		shortName:   "-" + string(shortName),
+		usage:       usage,
 		marked:      false,
 		Value:       value,
 	}
@@ -68,16 +70,31 @@ func Parse() ([]string, error) {
 
 func GetHelpMenu() string {
 	uniqueFlags := map[*Flag]struct{}{}
-    for _, f := range allFlags {
-        if _, ok := uniqueFlags[f]; !ok {
-            uniqueFlags[f] = struct{}{}
-        }
-    }
+	for _, f := range allFlags {
+		if _, ok := uniqueFlags[f]; !ok {
+			uniqueFlags[f] = struct{}{}
+		}
+	}
 
-    helpMenu := ""
+	helpMenu := ""
 
-    for k := range uniqueFlags {
-        helpMenu = helpMenu + fmt.Sprintf("  %s,%s\t%s\n", k.shortName, k.longName, k.description)
-    }
-    return helpMenu
+	flags := make([]*Flag, len(uniqueFlags))
+	i := 0
+	for k := range uniqueFlags {
+		flags[i] = k
+		i++
+	}
+	for i := 0; i < len(flags)-1; i++ {
+		for j := i; j < len(flags); j++ {
+			if flags[i].shortName > flags[j].shortName {
+				flags[i], flags[j] = flags[j], flags[i]
+			}
+		}
+	}
+
+	for _, v := range flags {
+		helpMenu = helpMenu + fmt.Sprintf("  %s,%s\t%s  Eg. %s\n\n", v.shortName, v.longName, v.description, v.usage)
+	}
+
+	return helpMenu
 }
