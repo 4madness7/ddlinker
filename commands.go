@@ -24,5 +24,12 @@ func getCommands() Commands {
 			usage: "ddlinker generate",
 			run:   generateHandler,
 		},
+
+		"link": Command{
+			name:  "link",
+			desc:  "Creates symlinks based on the configuration provided.",
+			usage: "ddlinker link",
+			run:   linkHandler,
+		},
 	}
 }

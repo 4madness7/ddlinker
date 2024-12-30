@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/4madness7/ddlinker/internal/config"
@@ -82,5 +83,44 @@ func generateHandler(data *Data) error {
 		return err
 	}
 	fmt.Printf("Config file '%s' created.\n", config.ConfigFileName)
+	return nil
+}
+
+func linkHandler(data *Data) error {
+	for _, dest := range data.cfg.Destinations {
+		path, err := getFullPath(dest.Path)
+		if err != nil {
+			return err
+		}
+		title := fmt.Sprintf("Linking '%s' | Path: ", dest.Name)
+		if data.flags.verbose.Value {
+			title += fmt.Sprintf("'%s'", path)
+		} else {
+			title += fmt.Sprintf("'%s'", dest.Path)
+		}
+		fmt.Println(title)
+		for _, link := range dest.Links {
+			fullLink, err := filepath.Abs(link)
+			if err != nil {
+				return err
+			}
+			destFullPath := filepath.Join(path, link)
+			var linkMsg string
+			if data.flags.verbose.Value {
+				linkMsg = fmt.Sprintf("%s -> %s", fullLink, destFullPath)
+			} else {
+				linkMsg = fmt.Sprintf("./%s -> %s", link, filepath.Join(dest.Path, link))
+			}
+			cmd := exec.Command("ln", "-s", fullLink, destFullPath)
+			_, err = cmd.Output()
+			if err != nil {
+				fmt.Printf("  ERROR: File/Directory already exists | %s", linkMsg)
+				continue
+			}
+			fmt.Printf("  SUCCESSFUL | %s", linkMsg)
+		}
+		fmt.Println()
+		fmt.Println()
+	}
 	return nil
 }
