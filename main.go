@@ -92,6 +92,7 @@ func main() {
 		err := cmd.run(&data)
 		if err != nil {
 			fmt.Println(err)
+			fmt.Println(shortHelpMsg)
 			os.Exit(1)
 		}
 		os.Exit(0)
@@ -100,6 +101,7 @@ func main() {
 	data.cfg, err = config.Read()
 	if err != nil {
 		fmt.Println(err)
+		fmt.Println(shortHelpMsg)
 		os.Exit(1)
 	}
 
@@ -131,6 +133,7 @@ func main() {
 	err = cmd.run(&data)
 	if err != nil {
 		fmt.Println(err)
+        fmt.Println(shortHelpMsg)
 		os.Exit(1)
 	}
 }
