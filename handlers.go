@@ -111,7 +111,7 @@ func linkHandler(data *Data) error {
 			} else {
 				linkMsg = fmt.Sprintf("./%s -> %s", link, filepath.Join(dest.Path, link))
 			}
-			cmd := exec.Command("ln", "-s", fullLink, destFullPath)
+			cmd := exec.Command("ln", "-s", fullLink, path)
 			_, err = cmd.Output()
 			if err != nil {
 				fmt.Printf("  ERROR: File/Directory already exists | %s\n", linkMsg)
