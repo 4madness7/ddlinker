@@ -133,7 +133,7 @@ func main() {
 	err = cmd.run(&data)
 	if err != nil {
 		fmt.Println(err)
-        fmt.Println(shortHelpMsg)
+		fmt.Println(shortHelpMsg)
 		os.Exit(1)
 	}
 }

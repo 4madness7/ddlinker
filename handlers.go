@@ -111,15 +111,47 @@ func linkHandler(data *Data) error {
 			} else {
 				linkMsg = fmt.Sprintf("./%s -> %s", link, filepath.Join(dest.Path, link))
 			}
-			cmd := exec.Command("ln", "-s", fullLink, path)
-			_, err = cmd.Output()
-			if err != nil {
-				fmt.Printf("  ERROR: File/Directory already exists | %s\n", linkMsg)
+
+			// check stats for destination
+			f, err := os.Lstat(destFullPath)
+			// if it does not exist, create link
+			if os.IsNotExist(err) {
+				cmd := exec.Command("ln", "-s", fullLink, path)
+				err := cmd.Run()
+				if err != nil {
+					fmt.Printf("Something went wrong | err: %v", err)
+					os.Exit(1)
+				}
+				fmt.Printf("  Done | %s\n", linkMsg)
 				continue
 			}
-			fmt.Printf("  SUCCESSFUL | %s\n", linkMsg)
+
+			// check if file if symlink
+			isSymLink := f.Mode()&os.ModeSymlink != 0
+			// if not, skip link
+			if !isSymLink {
+				fmt.Printf("  Error: file/dir already exists | %s\n", linkMsg)
+				continue
+			}
+
+			// read symlink
+			p, err := os.Readlink(destFullPath)
+			if err != nil {
+				fmt.Println("Error:", err)
+			}
+
+			if p != fullLink {
+				fmt.Printf("  Error: destination is a symlink to a different file/dir | %s\n", linkMsg)
+				continue
+			}
+			if p == fullLink {
+				fmt.Printf("  Already linked | %s\n", linkMsg)
+				continue
+			}
+
+			fmt.Printf("  Something went wrong, skipped. | %s\n", linkMsg)
 		}
-        fmt.Println()
+		fmt.Println()
 	}
 	return nil
 }
