@@ -17,7 +17,8 @@ const (
 # 'links' are all the file/dirs that you want to be symlinked to the specified 'path'.
 # Every string in the list must be a valid file/dir in your current directory.
 # Take the destination above, it will create a symlink that will look something
-# like this './nvim -> ~/.config/nvim'.`
+# like this './nvim -> ~/.config/nvim'.
+# For more info: https://github.com/4madness7/ddlinker`
 
 	shortHelpMsg = "Use 'ddlinker --help' for more information."
 )
