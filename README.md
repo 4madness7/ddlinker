@@ -86,7 +86,7 @@ Preview:
 
 The `link` command will give an output like this:
 ```
-`Linking 'home' | Path: '~'
+Linking 'home' | Path: '~'
   Done | ./.zshrc -> ~/.zshrc # if linked correctly
 
 Linking 'config' | Path: '~/.config'
