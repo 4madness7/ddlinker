@@ -1,16 +1,24 @@
 # Declarative Dotfiles Linker
-I made this for myself, but since it might be useful to others, here's a bit of documentation.
-This is a little tool to manage dotfiles in a declarative way.
-`ddlinker` will parse the `.ddlinker_config.toml` inside your current working directory and create symlinks for you.
+This is `ddlinker` a cli tool to manage your dotfiles... Declaratively!
+`ddlinker` will parse the `.ddlinker_config.toml` inside your current working
+directory and create symlinks for you.
 
----
+# Why
+I really like the declarative nature of tools like [Nix and NixOS](https://nixos.org/),
+but I don't like the way they manage dotfiles for my linux system(s).
+So after a bit of time a decided to create `ddlinker` to manage my dotfiles the
+way I like it and now it's my go tool to do that!
+
 # Installation
-To install you'll need [go](https://go.dev/doc/install) installed and run
-`go install github.com/4madness7/ddlinker@latest`
+To install, you'll need [go](https://go.dev/doc/install) installed and run
+```bash
+go install github.com/4madness7/ddlinker@latest
+```
 
----
 # Usage
-`ddlinker <flags> <command>`
+```bash
+ddlinker <flags> <command>
+```
 
 | Flags        | Description                                                       | Usage                          |
 | ------------ | ----------------------------------------------------------------- | ------------------------------ |
@@ -23,8 +31,7 @@ To install you'll need [go](https://go.dev/doc/install) installed and run
 | link     | Creates symlinks based on the configuration provided. Use it with '-v' for absolute paths. | `ddlinker <flags> link`    |
 | preview  | Shows a preview of the final links. Use it with '-v' for absolute paths.                   | `ddlinker <flags> preview` |
 
----
-# Config file
+# Examples
 `ddlinker` uses a `.ddlinker_config.toml` to configure all links.
 
 Here's an example of what the file looks like:
@@ -36,42 +43,19 @@ links = [ # all the links in the current working directory to link
     "hypr",
     "nvim",
 ]
-```
 
-The config above will create the links as following:
-```
-path-to-dofiles/hypr -> ~/.config/hypr
-path-to-dofiles/nvim -> ~/.config/nvim
-```
-
-The reason for this choice is because I like keeping my dotfiles like this
-```
-.
-├── .zshrc # file
-├── bin # dir
-├── hypr # dir
-└── nvim # dir
-```
-and with a tool like [stow](https://www.gnu.org/software/stow/manual/stow.html) I (think) couldn't really achieve that.
-
-For the dir tree above, a config file might look something like this
-```toml
-[[destinations]] 
-name = "config" 
-path = "~/.config"
-links = [ "hypr", "nvim" ]
-
-[[destinations]] 
-name = "home" 
+[[destinations]]
+name = "home"
 path = "~"
 links = [ ".zshrc" ]
 
-[[destinations]] 
-name = "local-bin" 
+[[destinations]]
+name = "local-bin"
 path = "~/.local"
 links = [ "bin" ]
 ```
-and `ddlinker` will create the following links
+
+The config above will create the links as following:
 ```
 ./.zshrc -> ~/.zshrc
 
@@ -80,3 +64,41 @@ and `ddlinker` will create the following links
 
 ./bin -> ~/.local/bin
 ```
+
+The `preview` command will give an output like this:
+```
+Destination name: home
+Destination path: ~
+Preview:
+  ./.zshrc -> ~/.zshrc
+
+Destination name: config
+Destination path: ~/.config
+Preview:
+  ./hypr -> ~/.config/hypr
+  ./nvim -> ~/.config/nvim
+
+Destination name: local-bin
+Destination path: ~/.local
+Preview:
+  ./bin -> ~/.local/bin
+```
+
+The `link` command will give an output like this:
+```
+`Linking 'home' | Path: '~'
+  Done | ./.zshrc -> ~/.zshrc # if linked correctly
+
+Linking 'config' | Path: '~/.config'
+  Already linked | ./hypr -> ~/.config/hypr # if link is already present
+  Error: file/dir already exists | ./nvim -> ~/.config/nvim # if there is already a file/dir in the destination
+
+Linking 'local-bin' | Path: '~/.local'
+  Error: destination is a symlink to a different file/dir | ./bin -> ~/.local/bin # if destination is a symlink, but points to a different file/dir
+```
+
+## Contributing
+
+To contribute, feel free to a new branch and send in a pull request.
+
+All PRs should be submitted to the `main` branch.
